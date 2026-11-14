@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Dashboard">
+  <meta name="theme-color" content="#000000">
+  <meta name="color-scheme" content="dark">
+  <title>Wall Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="dash" id="dash">
+    <section class="clock">
+      <div class="date" id="date"></div>
+      <div class="time" id="time">--:--</div>
+    </section>
+
+    <section class="card weather" id="weather" role="button" aria-label="Change weather location">
+      <div class="w-head">
+        <div class="w-title">
+          <div class="place"><span id="place"></span><svg class="chev" viewBox="0 0 12 8" aria-hidden="true"><path d="M1.5 1.75 6 6.25l4.5-4.5"/></svg></div>
+          <div class="cond" id="conditions"></div>
+        </div>
+        <div class="w-icon" id="wicon"></div>
+      </div>
+      <div class="range">
+        <span class="value lo" id="lo">--°</span>
+        <div class="track" id="track"><span class="dot" id="nowDot"></span></div>
+        <span class="value hi" id="hi">--°</span>
+        <span class="label">Low</span>
+        <span></span>
+        <span class="label">High</span>
+      </div>
+      <ul class="forecast" id="forecast"></ul>
+    </section>
+
+    <section class="card calendar" id="calBox">
+      <div class="card-head cal-head">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><rect x="1.5" y="2.5" width="13" height="12" rx="2.5"/><path d="M1.5 6.5h13M5 1v3M11 1v3"/></svg>
+        <span>Up Next</span>
+      </div>
+      <div class="cal-body" id="calBody"></div>
+    </section>
+
+    <section class="card quote" id="quoteBox">
+      <div class="card-head">
+        <svg class="q-glyph" viewBox="0 0 20 16" aria-hidden="true"><path d="M0 16V9.6C0 4.3 2.6 1.1 7.8 0l.9 1.9C5.9 3 4.5 4.9 4.3 7.6H8V16H0Zm11.6 0V9.6C11.6 4.3 14.2 1.1 19.4 0l.9 1.9C17.5 3 16.1 4.9 15.9 7.6h3.7V16h-8Z"/></svg>
+        <span>Quote</span>
+      </div>
+      <div class="q-body" id="quoteBody">
+        <div id="quoteInner">
+          <blockquote id="quoteText"></blockquote>
+          <div class="cite" id="quoteCite"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="picker" id="picker" hidden>
+    <div class="sheet" role="dialog" aria-labelledby="pickerTitle">
+      <div class="sheet-bar">
+        <span></span>
+        <h2 id="pickerTitle">Location</h2>
+        <button type="button" class="done" id="pickerClose">Done</button>
+      </div>
+      <label class="search">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="6.8" cy="6.8" r="5.3"/><path d="m10.8 10.8 4 4"/></svg>
+        <input type="search" id="pickerInput" placeholder="Search for a city or ZIP code"
+               autocomplete="off" autocorrect="off" autocapitalize="words" spellcheck="false">
+      </label>
+      <div class="sheet-status" id="pickerStatus"></div>
+      <ul class="sheet-list" id="pickerResults"></ul>
+    </div>
+  </div>
+
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

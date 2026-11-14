@@ -1,0 +1,11 @@
+# Calendar sign-in. Never commit the real file; caldav.env.example is the template.
+caldav.env
+*.env
+!caldav.env.example
+
+# Local tooling
+.claude/
+.DS_Store
+__pycache__/
+*.pyc
+/api/

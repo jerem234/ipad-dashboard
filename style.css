@@ -1,0 +1,568 @@
+/* Apple dark-mode system colors */
+:root {
+  --bg: #000;
+  --card: #1c1c1e;
+  --fill: rgba(118, 118, 128, 0.24);
+  --separator: rgba(84, 84, 88, 0.6);
+  --label: #fff;
+  --secondary: rgba(235, 235, 245, 0.6);
+  --tertiary: rgba(235, 235, 245, 0.3);
+  --tint: #ff9f0a;
+  --blue: #0a84ff;
+  --sym-sun: #ffd60a;
+  --sym-cloud: #f2f2f7;
+  --sym-cloud-dim: #8e8e93;
+  --sym-rain: #64d2ff;
+  --sym-bolt: #ffd60a;
+  --sym-moon: #f2f2f7;
+  --dot-ring: #1c1c1e;
+}
+
+/* Night mode: red monochrome, like StandBy / Watch Ultra night mode */
+body.night {
+  --card: transparent;
+  --fill: rgba(255, 40, 30, 0.14);
+  --separator: rgba(255, 40, 30, 0.25);
+  --label: #ff2a1f;
+  --secondary: rgba(255, 42, 31, 0.62);
+  --tertiary: rgba(255, 42, 31, 0.32);
+  --tint: #ff2a1f;
+  --blue: #ff2a1f;
+  --sym-sun: #ff2a1f;
+  --sym-cloud: #ff2a1f;
+  --sym-cloud-dim: rgba(255, 42, 31, 0.55);
+  --sym-rain: #ff2a1f;
+  --sym-bolt: #ff2a1f;
+  --sym-moon: #ff2a1f;
+  --dot-ring: #000;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* Everything is sized in rem, and rem scales with the screen */
+html { font-size: 1.6vw; }
+@media (orientation: portrait) {
+  /* Capped by height too, so squarer iPads (768x1024) still fit everything */
+  html { font-size: 2.6vw; font-size: min(2.6vw, 1.72vh); }
+}
+
+html, body { height: 100%; overflow: hidden; background: #000; }
+
+body {
+  background: var(--bg);
+  color: var(--label);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-text-size-adjust: 100%;
+}
+
+.dash {
+  position: fixed;
+  top: 0; right: 0; bottom: 0; left: 0;
+  display: grid;
+  padding: 1.6rem;
+  padding-top: calc(1.6rem + env(safe-area-inset-top));
+  padding-bottom: calc(1.6rem + env(safe-area-inset-bottom));
+  padding-left: calc(1.6rem + env(safe-area-inset-left));
+  padding-right: calc(1.6rem + env(safe-area-inset-right));
+  grid-gap: 1.1rem;
+  transition: opacity 2s ease, transform 4s ease;
+}
+body.night .dash { opacity: 0.72; }
+
+@media (orientation: landscape) {
+  .dash {
+    grid-template-columns: 1.3fr 1fr;
+    grid-template-rows: auto 1fr;
+    grid-template-areas:
+      "clock weather"
+      "quote quote";
+  }
+  .time { font-size: 7.4rem; }
+  .date { font-size: 1.35rem; }
+  /* With a calendar: the weather runs tall on the right with the calendar
+     below it, and the quote fills everything under the clock */
+  body.has-cal .dash {
+    grid-template-columns: 1.2fr 1fr;
+    grid-template-rows: auto auto 1fr;
+    grid-template-areas:
+      "clock weather"
+      "quote weather"
+      "quote calendar";
+  }
+
+  /* Larger weather */
+  .dash .place { font-size: 1.15rem; }
+  .dash .cond { font-size: 0.95rem; }
+  .dash .w-icon { width: 3rem; height: 3rem; }
+  .dash .range { margin-top: 1rem; }
+  .dash .value { font-size: 3.4rem; }
+  .dash .forecast { margin-top: 1.1rem; padding-top: 0.9rem; }
+  .dash .f-day { font-size: 0.9rem; }
+  .dash .f-icon { margin: 0.45rem 0 0.4rem; }
+  .dash .f-icon svg { width: 2rem; height: 2rem; }
+  .dash .f-temps { font-size: 1.2rem; }
+  .dash .f-rain { font-size: 0.82rem; }
+
+  /* Slightly smaller calendar */
+  .dash .cal-day { font-size: 0.7rem; margin: 0.55rem 0 0.25rem; }
+  .dash .cal-ev { padding: 0.2rem 0; }
+  .dash .cal-title { font-size: 0.95rem; }
+  .dash .cal-time { font-size: 0.78rem; }
+}
+
+@media (orientation: portrait) {
+  .dash {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto 1fr;
+    grid-template-areas:
+      "clock"
+      "weather"
+      "quote";
+  }
+  .clock { padding: 0.4rem 0 0.6rem; }
+  body.has-cal .dash {
+    grid-template-rows: auto auto auto 1fr;
+    grid-template-areas:
+      "clock"
+      "weather"
+      "calendar"
+      "quote";
+  }
+  .cal-body { max-height: 12.5rem; }
+  .time { font-size: 7rem; }
+  .date { font-size: 1.3rem; }
+
+}
+
+/* ---------- Clock (Lock Screen style) ---------- */
+.clock {
+  grid-area: clock;
+  align-self: center;
+  text-align: center;
+}
+
+.date {
+  font-weight: 600;
+  color: var(--secondary);
+  letter-spacing: 0.005em;
+}
+
+.time {
+  font-family: "SF Pro Display", -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.035em;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  margin-top: 0.02em;
+}
+
+/* ---------- Cards (widgets) ---------- */
+.card {
+  background: var(--card);
+  border-radius: 1.5rem;
+  padding: 1.2rem 1.3rem;
+  transition: background-color 2s ease;
+}
+
+.card-head {
+  display: -webkit-box;
+  display: flex;
+  -webkit-box-align: center;
+  align-items: center;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--tint);
+  letter-spacing: 0.01em;
+}
+
+/* ---------- Weather widget ---------- */
+.weather {
+  grid-area: weather;
+  align-self: center;
+  cursor: pointer;
+  display: -webkit-box;
+  display: flex;
+  -webkit-box-orient: vertical;
+  flex-direction: column;
+  min-height: 0;
+}
+.weather:active { opacity: 0.7; }
+
+.w-head {
+  display: -webkit-box;
+  display: flex;
+  -webkit-box-pack: justify;
+  justify-content: space-between;
+  -webkit-box-align: start;
+  align-items: flex-start;
+}
+.w-title { min-width: 0; }
+
+.place {
+  font-size: 1rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.chev {
+  width: 0.62em;
+  height: 0.42em;
+  margin-left: 0.35em;
+  vertical-align: 0.12em;
+  fill: none;
+  stroke: var(--secondary);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.cond {
+  margin-top: 0.15rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--secondary);
+  min-height: 1.2em;
+}
+
+.w-icon { width: 2.4rem; height: 2.4rem; -webkit-flex-shrink: 0; flex-shrink: 0; margin: -0.25rem -0.2rem 0 0.8rem; }
+.w-icon svg { width: 100%; height: 100%; display: block; overflow: visible; }
+
+/* Low ━━●━━ High, like the Weather app's 10-day forecast */
+.range {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  -webkit-box-align: center;
+  align-items: center;
+  grid-column-gap: 1rem;
+  margin-top: 0.7rem;
+}
+
+.value {
+  font-size: 2.6rem;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+.value.lo { color: var(--secondary); }
+
+.label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--secondary);
+  margin-top: 0.3rem;
+  margin-left: 0.08em;
+}
+
+.track {
+  position: relative;
+  height: 0.42rem;
+  border-radius: 0.21rem;
+  background: var(--fill);
+}
+body.night .track { background: var(--tertiary) !important; }
+
+.dot {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0.78rem;
+  height: 0.78rem;
+  margin: -0.39rem 0 0 -0.39rem;
+  border-radius: 50%;
+  background: var(--label);
+  box-shadow: 0 0 0 0.16rem var(--dot-ring);
+  display: none;
+}
+
+/* 5-day forecast: one row of columns */
+.forecast {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  margin-top: 0.8rem;
+  padding-top: 0.7rem;
+  border-top: 1px solid var(--separator);
+  text-align: center;
+}
+
+.forecast li {
+  display: -webkit-box;
+  display: flex;
+  -webkit-box-orient: vertical;
+  flex-direction: column;
+  -webkit-box-align: center;
+  align-items: center;
+}
+
+.f-day { font-size: 0.78rem; font-weight: 600; color: var(--secondary); }
+.f-icon { margin: 0.35rem 0 0.3rem; }
+.f-icon svg { width: 1.55rem; height: 1.55rem; display: block; overflow: visible; }
+.f-temps { font-size: 0.95rem; font-weight: 500; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.f-lo { color: var(--secondary); }
+.f-rain { margin-top: 0.1rem; font-size: 0.72rem; font-weight: 600; color: var(--sym-rain); }
+.f-rain.dry { color: var(--tertiary); }
+
+/* SF Symbols-style weather glyphs */
+.s-sun { fill: var(--sym-sun); }
+.s-ray { stroke: var(--sym-sun); stroke-width: 1.9; stroke-linecap: round; }
+.s-moon { fill: var(--sym-moon); }
+.s-cloud { fill: var(--sym-cloud); }
+.s-cloud-dim { fill: var(--sym-cloud-dim); }
+.s-rain { stroke: var(--sym-rain); stroke-width: 2; stroke-linecap: round; }
+.s-snow { fill: var(--sym-cloud); }
+.s-bolt { fill: var(--sym-bolt); }
+.s-fog { stroke: var(--sym-cloud-dim); stroke-width: 2; stroke-linecap: round; }
+
+/* ---------- Calendar widget (Up Next) ---------- */
+.calendar {
+  grid-area: calendar;
+  min-height: 0;
+  display: none;
+  -webkit-box-orient: vertical;
+  flex-direction: column;
+}
+body.has-cal .calendar { display: -webkit-box; display: flex; }
+
+.cal-head { color: #ff453a; }
+body.night .cal-head { color: var(--tint); }
+.cal-head svg {
+  width: 1em; height: 1em;
+  margin-right: 0.45em;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+}
+
+.cal-body {
+  -webkit-box-flex: 1;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  padding-top: 0.2rem;
+}
+
+.cal-day {
+  margin: 0.75rem 0 0.35rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--secondary);
+}
+
+.cal-ev {
+  display: -webkit-box;
+  display: flex;
+  -webkit-box-align: stretch;
+  align-items: stretch;
+  padding: 0.3rem 0;
+}
+.cal-bar {
+  width: 0.24rem;
+  border-radius: 0.12rem;
+  margin-right: 0.7rem;
+  -webkit-flex-shrink: 0;
+  flex-shrink: 0;
+  background: var(--secondary);
+}
+body.night .cal-bar { background: var(--label) !important; }
+.cal-text { min-width: 0; }
+.cal-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cal-time { font-size: 0.88rem; color: var(--secondary); margin-top: 0.1rem; }
+.cal-empty { margin-top: 0.8rem; font-size: 1rem; color: var(--secondary); }
+
+/* ---------- Quote widget ---------- */
+.quote {
+  grid-area: quote;
+  min-height: 0;
+  display: -webkit-box;
+  display: flex;
+  -webkit-box-orient: vertical;
+  flex-direction: column;
+  cursor: pointer;
+}
+
+.q-glyph { width: 0.95em; height: 0.76em; fill: var(--tint); margin-right: 0.45em; }
+
+.q-body {
+  -webkit-box-flex: 1;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  display: -webkit-box;
+  display: flex;
+  -webkit-box-orient: vertical;
+  flex-direction: column;
+  -webkit-box-pack: center;
+  justify-content: center;
+  padding: 0.6rem 0.4rem 0.4rem;
+  transition: opacity 1.2s ease;
+}
+.q-body.fading { opacity: 0; }
+
+#quoteInner { -webkit-flex-shrink: 0; flex-shrink: 0; }
+
+blockquote {
+  font-family: ui-serif, "New York", "Iowan Old Style", Georgia, serif;
+  font-weight: 400;
+  line-height: 1.4;
+  white-space: pre-line;
+  text-wrap: pretty;
+}
+
+.cite {
+  margin-top: 0.9em;
+  font-size: 0.62em;
+  color: var(--secondary);
+}
+.cite .author { color: var(--label); font-weight: 600; }
+.cite .source { font-style: italic; }
+
+/* ---------- Location picker (iOS sheet) ---------- */
+.picker {
+  position: fixed;
+  top: 0; right: 0; bottom: 0; left: 0;
+  z-index: 10;
+  background: rgba(0, 0, 0, 0.5);
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+  display: -webkit-box;
+  display: flex;
+  -webkit-box-pack: center;
+  justify-content: center;
+  -webkit-box-align: start;
+  align-items: flex-start;
+  padding: 8vh 4vw 0;
+  -webkit-animation: fade 0.2s ease;
+  animation: fade 0.2s ease;
+}
+.picker[hidden] { display: none; }
+
+.sheet {
+  width: 100%;
+  max-width: 540px;
+  max-height: 80vh;
+  display: -webkit-box;
+  display: flex;
+  -webkit-box-orient: vertical;
+  flex-direction: column;
+  background: #1c1c1e;
+  border-radius: 14px;
+  padding: 0 16px 16px;
+  font-size: 17px;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.5);
+  -webkit-animation: rise 0.28s cubic-bezier(0.2, 0.9, 0.3, 1);
+  animation: rise 0.28s cubic-bezier(0.2, 0.9, 0.3, 1);
+}
+body.night .sheet { background: #000; box-shadow: 0 0 0 1px var(--separator); }
+
+@-webkit-keyframes fade { from { opacity: 0; } }
+@keyframes fade { from { opacity: 0; } }
+@-webkit-keyframes rise { from { -webkit-transform: translateY(24px); opacity: 0; } }
+@keyframes rise { from { transform: translateY(24px); opacity: 0; } }
+
+.sheet-bar {
+  display: -webkit-box;
+  display: flex;
+  -webkit-box-align: center;
+  align-items: center;
+  height: 56px;
+}
+.sheet-bar > * { -webkit-box-flex: 1; flex: 1; }
+.sheet-bar h2 { font-size: 17px; font-weight: 600; text-align: center; }
+
+.picker button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.picker .done { color: var(--blue); font-weight: 600; text-align: right; padding: 8px 0; }
+
+.search {
+  display: -webkit-box;
+  display: flex;
+  -webkit-box-align: center;
+  align-items: center;
+  background: var(--fill);
+  border-radius: 10px;
+  padding: 0 10px;
+  height: 38px;
+}
+.search svg {
+  width: 16px; height: 16px;
+  -webkit-flex-shrink: 0; flex-shrink: 0;
+  fill: none;
+  stroke: var(--secondary);
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+.search input {
+  -webkit-box-flex: 1;
+  flex: 1;
+  min-width: 0;
+  margin-left: 8px;
+  font: inherit;
+  font-size: 17px; /* 16px+ keeps iOS from zooming on focus */
+  color: var(--label);
+  background: transparent;
+  border: 0;
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.search input::placeholder { color: var(--secondary); }
+.search input::-webkit-search-cancel-button { -webkit-appearance: none; }
+
+.sheet-status {
+  font-size: 13px;
+  color: var(--secondary);
+  min-height: 16px;
+  margin: 14px 16px 6px;
+}
+
+.sheet-list {
+  list-style: none;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  background: #2c2c2e;
+  border-radius: 10px;
+}
+.sheet-list:empty { display: none; }
+body.night .sheet-list { background: transparent; box-shadow: inset 0 0 0 1px var(--separator); }
+.sheet-list li { position: relative; }
+.sheet-list li + li:before {
+  content: "";
+  position: absolute;
+  top: 0; right: 0; left: 16px;
+  height: 1px;
+  -webkit-transform: scaleY(0.5);
+  transform: scaleY(0.5);
+  background: var(--separator);
+}
+.sheet-list button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 11px 16px;
+}
+.sheet-list button:active { background: rgba(255, 255, 255, 0.08); }
+.sheet-list .sub { display: block; color: var(--secondary); font-size: 15px; margin-top: 1px; }

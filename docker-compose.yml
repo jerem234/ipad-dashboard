@@ -1,0 +1,43 @@
+name: ipad-dashboard
+
+services:
+  dashboard:
+    image: nginx:1.27-alpine
+    container_name: ipad-dashboard
+    restart: unless-stopped
+    ports:
+      - "8088:80"
+    volumes:
+      # Paths are for ZimaOS / CasaOS. On another server, point them at
+      # wherever you put this folder (see README).
+      - /DATA/AppData/ipad-dashboard:/usr/share/nginx/html:ro
+      - /DATA/AppData/ipad-dashboard/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+
+  calendar:
+    image: python:3.12-alpine
+    container_name: ipad-dashboard-calendar
+    restart: unless-stopped
+    command: ["python", "-u", "/app/calendar_service.py"]
+    volumes:
+      - /DATA/AppData/ipad-dashboard/server:/app:ro
+      - /DATA/AppData/ipad-dashboard-private:/secrets:ro
+
+x-casaos:
+  main: dashboard
+  architectures:
+    - amd64
+    - arm64
+  author: Jeremiah
+  developer: Jeremiah
+  category: Utilities
+  # Replace YOUR-SERVER-IP with your server's address (e.g. 192.168.1.50)
+  icon: http://YOUR-SERVER-IP:8088/icon.svg
+  title:
+    en_us: iPad Dashboard
+  tagline:
+    en_us: Wall dashboard for iPad
+  description:
+    en_us: Clock, weather, calendar and a random quote, with a red night mode.
+  port_map: "8088"
+  scheme: http
+  index: /
